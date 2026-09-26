@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -66,6 +67,35 @@ class ProjectController extends Controller
         $project->delete();
 
         return response()->json(['message' => 'Project deleted.']);
+    }
+
+    public function share(Request $request, Project $project)
+    {
+        $this->authorizeOwnership($request, $project);
+
+        if (! $project->share_token) {
+            $project->share_token = Str::random(32);
+        }
+        $project->is_public = true;
+        $project->save();
+
+        return response()->json([
+            'share_token' => $project->share_token,
+            'is_public' => $project->is_public,
+        ]);
+    }
+
+    public function unshare(Request $request, Project $project)
+    {
+        $this->authorizeOwnership($request, $project);
+
+        $project->is_public = false;
+        $project->save();
+
+        return response()->json([
+            'share_token' => $project->share_token,
+            'is_public' => $project->is_public,
+        ]);
     }
 
     protected function authorizeOwnership(Request $request, Project $project): void

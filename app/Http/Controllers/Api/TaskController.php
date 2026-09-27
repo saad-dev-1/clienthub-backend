@@ -9,6 +9,18 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    public function indexAll(Request $request)
+    {
+        $tasks = Task::whereHas('project', function ($query) use ($request) {
+            $query->where('user_id', $request->user()->id);
+        })
+            ->with('project:id,name')
+            ->latest()
+            ->get();
+
+        return response()->json($tasks);
+    }
+
     public function index(Request $request, Project $project)
     {
         $this->authorizeProject($request, $project);

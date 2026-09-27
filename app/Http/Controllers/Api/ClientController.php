@@ -37,7 +37,13 @@ class ClientController extends Controller
     {
         $this->authorizeOwnership($request, $client);
 
-        return response()->json($client);
+        return response()->json(
+            $client->load([
+                'projects' => function ($query) {
+                    $query->latest();
+                },
+            ])
+        );
     }
 
     public function update(Request $request, Client $client)

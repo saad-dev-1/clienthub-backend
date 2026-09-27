@@ -9,6 +9,7 @@ return [
         'http://localhost:5173',
         'http://localhost:5174',
         'https://clienthub-frontend-gules.vercel.app',
+        'https://klient-ten.vercel.app',
     ],
 
     'allowed_origins_patterns' => [],

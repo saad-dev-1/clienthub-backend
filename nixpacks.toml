@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.pdo_mysql", "php82Extensions.mbstring", "php82Extensions.bcmath", "php82Extensions.gd", "php82Extensions.xml", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.tokenizer", "php82Extensions.openssl", "composer", "unzip"]
+nixPkgs = ["php83", "php83Extensions.pdo_mysql", "php83Extensions.mbstring", "php83Extensions.bcmath", "php83Extensions.gd", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.tokenizer", "php83Extensions.openssl", "php83Extensions.intl", "composer", "unzip"]
 
 [phases.install]
-cmds = ["composer install --no-dev --optimize-autoloader"]
+cmds = ["composer install --no-dev --optimize-autoloader --no-interaction"]
 
 [phases.build]
 cmds = [

@@ -19,12 +19,17 @@ class Project extends Model
         'deadline',
         'share_token',
         'is_public',
+        'client_feedback',
+        'client_approved',
+        'client_feedback_at',
     ];
 
     protected $casts = [
         'deadline' => 'date',
         'progress' => 'integer',
         'is_public' => 'boolean',
+        'client_approved' => 'boolean',
+        'client_feedback_at' => 'datetime',
     ];
 
     public function user()
@@ -40,5 +45,10 @@ class Project extends Model
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 }

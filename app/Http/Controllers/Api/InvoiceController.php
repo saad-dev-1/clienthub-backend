@@ -80,15 +80,45 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
-            'status' => 'in:draft,sent,paid,overdue',
+            'status' => 'sometimes|in:draft,sent,paid,overdue',
             'issue_date' => 'sometimes|required|date',
-            'due_date' => 'sometimes|required|date',
+            'due_date' => 'sometimes|required|date|after_or_equal:issue_date',
             'notes' => 'nullable|string',
+            'items' => 'sometimes|array|min:1',
+            'items.*.description' => 'required_with:items|string|max:255',
+            'items.*.quantity' => 'required_with:items|numeric|min:0.01',
+            'items.*.rate' => 'required_with:items|numeric|min:0',
         ]);
 
-        $invoice->update($validated);
+        DB::transaction(function () use ($invoice, $validated) {
+            // Update invoice fields (excluding items)
+            $invoiceFields = collect($validated)->except('items')->toArray();
+            if (!empty($invoiceFields)) {
+                $invoice->update($invoiceFields);
+            }
 
-        return response()->json($invoice->load('client:id,name', 'items'));
+            // If items provided, replace them
+            if (isset($validated['items'])) {
+                $invoice->items()->delete();
+
+                $total = 0;
+                foreach ($validated['items'] as $item) {
+                    $amount = $item['quantity'] * $item['rate'];
+                    $total += $amount;
+
+                    $invoice->items()->create([
+                        'description' => $item['description'],
+                        'quantity' => $item['quantity'],
+                        'rate' => $item['rate'],
+                        'amount' => $amount,
+                    ]);
+                }
+
+                $invoice->update(['total' => $total]);
+            }
+        });
+
+        return response()->json($invoice->fresh()->load('client:id,name', 'items'));
     }
 
     public function destroy(Request $request, Invoice $invoice)
@@ -117,7 +147,7 @@ class InvoiceController extends Controller
 
         $invoice->load('client', 'items', 'user');
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoice-pdf', [
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoice-klient', [
             'invoice' => $invoice,
         ]);
 

@@ -40,7 +40,9 @@ class ProjectController extends Controller
     {
         $this->authorizeOwnership($request, $project);
 
-        return response()->json($project->load('client:id,name'));
+        return response()->json(
+            $project->load('client:id,name', 'tasks', 'attachments')
+        );
     }
 
     public function update(Request $request, Project $project)
@@ -95,6 +97,22 @@ class ProjectController extends Controller
         return response()->json([
             'share_token' => $project->share_token,
             'is_public' => $project->is_public,
+        ]);
+    }
+
+    public function clearFeedback(Request $request, Project $project)
+    {
+        $this->authorizeOwnership($request, $project);
+
+        $project->update([
+            'client_feedback' => null,
+            'client_approved' => null,
+            'client_feedback_at' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Feedback cleared.',
+            'project' => $project->fresh(),
         ]);
     }
 

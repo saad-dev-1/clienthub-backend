@@ -16,13 +16,14 @@ class SettingsController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'currency' => 'nullable|string|size:3|in:USD,PKR,EUR,GBP,AED,INR',
         ]);
 
         $user->update($validated);
 
         return response()->json([
             'message' => 'Profile updated successfully.',
-            'user' => $user,
+            'user' => $user->fresh(),
         ]);
     }
 
@@ -49,6 +50,24 @@ class SettingsController extends Controller
 
         return response()->json([
             'message' => 'Password updated successfully.',
+        ]);
+    }
+
+    public function updateCurrency(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'currency' => 'required|string|size:3|in:USD,PKR,EUR,GBP,AED,INR',
+        ]);
+
+        $user->update([
+            'currency' => $validated['currency'],
+        ]);
+
+        return response()->json([
+            'message' => 'Currency updated successfully.',
+            'user' => $user->fresh(),
         ]);
     }
 }

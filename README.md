@@ -1,31 +1,38 @@
-# Klient Backend
-
+Klient Backend
 Laravel API for Klient — a client portal for freelancers to manage invoices, projects, and clients in one place.
 
-## What's inside
+What's inside
+User auth with Sanctum (register, login, password reset)
 
-- User auth with Sanctum (register, login, password reset)
-- Invoice management with PDF export
-- Multi-currency support (USD, PKR, EUR, GBP, AED, INR)
-- Projects and tasks
-- Client management
-- File attachments for projects
-- Public share links so clients can view progress without an account
-- Auto-marks invoices as overdue daily
+Invoice management with PDF export
 
-## Tech stack
+Multi-currency support (USD, PKR, EUR, GBP, AED, INR)
 
-- Laravel 12
-- MySQL
-- Laravel Sanctum
-- barryvdh/laravel-dompdf for PDFs
-- Deployed on Railway
+Projects and tasks
 
-## Getting started
+Client management
 
+File attachments for projects
+
+Public share links so clients can view progress without an account
+
+Auto-marks invoices as overdue daily
+
+Tech stack
+Laravel 12
+
+MySQL
+
+Laravel Sanctum
+
+barryvdh/laravel-dompdf for PDFs
+
+Deployed on Railway
+
+Getting started
 You'll need PHP 8.2+, Composer, and MySQL installed.
 
-```bash
+bash
 git clone https://github.com/saad-dev-1/clienthub-backend.git
 cd clienthub-backend
 composer install

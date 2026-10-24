@@ -155,10 +155,22 @@ class InvoiceController extends Controller
     }
 
     protected function generateInvoiceNumber(int $userId): string
-    {
-        $count = Invoice::where('user_id', $userId)->count() + 1;
-        return 'INV-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+{
+    // Lock for update to prevent race conditions
+    $lastInvoice = Invoice::where('user_id', $userId)
+        ->orderBy('id', 'desc')
+        ->lockForUpdate()
+        ->first();
+
+    if (!$lastInvoice) {
+        return 'INV-0001';
     }
+
+    $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastInvoice->number);
+    $nextNumber = $lastNumber + 1;
+
+    return 'INV-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+}
 
     protected function authorizeOwnership(Request $request, Invoice $invoice): void
     {
